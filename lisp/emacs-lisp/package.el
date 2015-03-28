@@ -204,12 +204,6 @@ If VERSION is nil, the package is not loaded (it is \"disabled\")."
   :group 'package
   :version "24.1")
 
-(defvar Info-directory-list)
-(declare-function info-initialize "info" ())
-(declare-function url-http-file-exists-p "url-http" (url))
-(declare-function lm-header "lisp-mnt" (header))
-(declare-function lm-commentary "lisp-mnt" (&optional file))
-
 (defcustom package-archives '(("gnu" . "http://elpa.gnu.org/packages/"))
   "An alist of archives from which to fetch.
 The default value points to the GNU Emacs package repository.
@@ -533,6 +527,9 @@ Return the max version (as a string) if the package is held at a lower version."
            (unless (version-list-= version (version-to-list force))
              force))
           (t (error "Invalid element in `package-load-list'")))))
+
+(defvar Info-directory-list)
+(declare-function info-initialize "info" ())
 
 (defun package-activate-1 (pkg-desc &optional reload)
   "Activate package given by PKG-DESC, even if it was already active.
@@ -875,6 +872,8 @@ buffer is killed afterwards.  Return the last value in BODY."
                 ,location))
        (insert-file-contents (expand-file-name ,file ,location)))
      ,@body))
+
+(declare-function url-http-file-exists-p "url-http" (url))
 
 (defun package--archive-file-exists-p (location file)
   (let ((http (string-match "\\`https?:" location)))
@@ -1294,6 +1293,8 @@ is wrapped around any parts requiring it."
                   (list (car dep) "0"))
                  (t dep)))
               deps))))
+
+(declare-function lm-header "lisp-mnt" (header))
 
 (defun package-buffer-info ()
   "Return a `package-desc' describing the package in the current buffer.
@@ -1768,6 +1769,8 @@ the table."
     (with-help-window (help-buffer)
       (with-current-buffer standard-output
         (describe-package-1 package)))))
+
+(declare-function lm-commentary "lisp-mnt" (&optional file))
 
 (defun describe-package-1 (pkg)
   (require 'lisp-mnt)
