@@ -4846,6 +4846,33 @@ which is higher than \"1alpha\", which is higher than \"1snapshot\".
 Also, \"-GIT\", \"-CVS\" and \"-NNN\" are treated as snapshot versions."
   (version-list-= (version-to-list v1) (version-to-list v2)))
 
+(defun version-join (vlist)
+  "Return the version string corresponding to the list VLIST.
+This is, approximately, the inverse of `version-to-list'.
+\(Actually, it returns only one of the possible inverses, since
+`version-to-list' is a many-to-one operation.)"
+  (if (null vlist)
+      ""
+    (let ((str-list (list "." (int-to-string (car vlist)))))
+      (dolist (num (cdr vlist))
+        (cond
+         ((>= num 0)
+          (push (int-to-string num) str-list)
+          (push "." str-list))
+         ((< num -4)
+          (error "Invalid version list `%s', number < -4" vlist))
+         (t
+          ;; pre, or beta, or alpha
+          (cond ((equal "." (car str-list))
+                 (pop str-list))
+                ((not (string-match "[0-9]+" (car str-list)))
+                 (error "Invalid version list `%s'" vlist)))
+          (push (elt ["pre" "beta" "alpha" "snapshot"] (- 0 1 num))
+                str-list))))
+      (when (equal "." (car str-list))
+        (pop str-list))
+      (apply #'concat (nreverse str-list)))))
+
 (defvar package--builtin-versions
   ;; Mostly populated by loaddefs.el via autoload-builtin-package-versions.
   (purecopy `((emacs . ,(version-to-list emacs-version))))

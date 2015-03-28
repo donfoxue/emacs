@@ -485,35 +485,7 @@ version higher than the one being used.  To check for package
   "List of the names of currently activated packages.")
 (put 'package-activated-list 'risky-local-variable t)
 
-(defun package-version-join (vlist)
-  "Return the version string corresponding to the list VLIST.
-This is, approximately, the inverse of `version-to-list'.
-\(Actually, it returns only one of the possible inverses, since
-`version-to-list' is a many-to-one operation.)"
-  (if (null vlist)
-      ""
-    (let ((str-list (list "." (int-to-string (car vlist)))))
-      (dolist (num (cdr vlist))
-        (cond
-         ((>= num 0)
-          (push (int-to-string num) str-list)
-          (push "." str-list))
-         ((< num -4)
-          (error "Invalid version list `%s'" vlist))
-         (t
-          ;; pre, or beta, or alpha
-          (cond ((equal "." (car str-list))
-                 (pop str-list))
-                ((not (string-match "[0-9]+" (car str-list)))
-                 (error "Invalid version list `%s'" vlist)))
-          (push (cond ((= num -1) "pre")
-                      ((= num -2) "beta")
-                      ((= num -3) "alpha")
-                      ((= num -4) "snapshot"))
-                str-list))))
-      (if (equal "." (car str-list))
-          (pop str-list))
-      (apply 'concat (nreverse str-list)))))
+(define-obsolete-function-alias 'package-version-join 'version-join)
 
 (defun package-load-descriptor (pkg-dir)
   "Load the description file in directory PKG-DIR."
