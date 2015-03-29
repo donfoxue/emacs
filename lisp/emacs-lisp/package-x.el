@@ -204,7 +204,7 @@ if it exists."
                   (`single (lm-commentary))
                   (`tar nil))) ;; FIXME: Get it from the README file.
                (extras (package-desc-extras pkg-desc))
-	       (pkg-version (package-version-join split-version))
+	       (pkg-version (version-join split-version))
 	       (pkg-buffer (current-buffer)))
 
           ;; `package-upload-file' will error if given a directory,

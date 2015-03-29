@@ -422,7 +422,7 @@ Slots:
 (defun package-desc-full-name (pkg-desc)
   (format "%s-%s"
           (package-desc-name pkg-desc)
-          (package-version-join (package-desc-version pkg-desc))))
+          (version-join (package-desc-version pkg-desc))))
 
 (defun package-desc-suffix (pkg-desc)
   (pcase (package-desc-kind pkg-desc)
@@ -700,7 +700,7 @@ Newer versions are always activated, regardless of FORCE."
         (if fail
             (warn "Unable to activate package `%s'.
 Required package `%s-%s' is unavailable"
-                  package (car fail) (package-version-join (cadr fail)))
+                  package (car fail) (version-join (cadr fail)))
           ;; If all goes well, activate the package itself.
           (package-activate-1 pkg-vec force)))))))
 
@@ -795,7 +795,7 @@ untar into a directory named DIR; otherwise, signal an error."
          (nconc
           (list 'define-package
                 (symbol-name name)
-                (package-version-join (package-desc-version pkg-desc))
+                (version-join (package-desc-version pkg-desc))
                 (package-desc-summary pkg-desc)
                 (let ((requires (package-desc-reqs pkg-desc)))
                   (list 'quote
@@ -803,7 +803,7 @@ untar into a directory named DIR; otherwise, signal an error."
                         (mapcar
                          (lambda (elt)
                            (list (car elt)
-                                 (package-version-join (cadr elt))))
+                                 (version-join (cadr elt))))
                          requires))))
           (package--alist-to-plist-args
            (package-desc-extras pkg-desc))))
@@ -1374,8 +1374,8 @@ SEEN is used internally to detect infinite recursion."
               (setq packages (delq already packages))
               (setq already nil))
           (error "Need package `%s-%s', but only %s is being installed"
-                 next-pkg (package-version-join next-version)
-                 (package-version-join (package-desc-version already)))))
+                 next-pkg (version-join next-version)
+                 (version-join (package-desc-version already)))))
       (cond
        (already nil)
        ((package-installed-p next-pkg next-version) nil)
@@ -1394,8 +1394,8 @@ SEEN is used internally to detect infinite recursion."
                ((version-list-< version next-version)
                 (error
                  "Need package `%s-%s', but only %s is available"
-                 next-pkg (package-version-join next-version)
-                 (package-version-join version)))
+                 next-pkg (version-join next-version)
+                 (version-join version)))
                (disabled
                 (unless problem
                   (setq problem
@@ -1403,7 +1403,7 @@ SEEN is used internally to detect infinite recursion."
                             (format "Package `%s' held at version %s, \
 but version %s required"
                                     next-pkg disabled
-                                    (package-version-join next-version))
+                                    (version-join next-version))
                           (format "Required package '%s' is disabled"
                                   next-pkg)))))
                (t (setq found pkg-desc)))))
@@ -1411,7 +1411,7 @@ but version %s required"
             (if problem
                 (error "%s" problem)
               (error "Package `%s-%s' is unavailable"
-                     next-pkg (package-version-join next-version))))
+                     next-pkg (version-join next-version))))
           (setq packages
                 (package-compute-transaction (cons found packages)
                                              (package-desc-reqs found)
@@ -1935,7 +1935,7 @@ will be deleted."
     (and version
          (insert "    "
                  (propertize "Version" 'font-lock-face 'bold) ": "
-                 (package-version-join version) "\n"))
+                 (version-join version) "\n"))
 
     (setq reqs (if desc (package-desc-reqs desc)))
     (when reqs
@@ -1945,7 +1945,7 @@ will be deleted."
           (let* ((name (car req))
                  (vers (cadr req))
                  (text (format "%s-%s" (symbol-name name)
-                               (package-version-join vers)))
+                               (version-join vers)))
                  (reason (if (and (listp incompatible-reason)
                                   (assq name incompatible-reason))
                              " (not available)" "")))
@@ -1987,7 +1987,7 @@ will be deleted."
                                     (if (stringp dir) "installed" dir))))
                      (if (not ov) (format "%s" from)
                        (format "%s (%s)"
-                               (make-text-button (package-version-join ov) nil
+                               (make-text-button (version-join ov) nil
                                                  'face 'link
                                                  'follow-link t
                                                  'action
@@ -2185,7 +2185,7 @@ of these dependencies, similar to the list returned by
   (let* ((reqs    (package-desc-reqs pkg))
          (version (cadr (assq 'emacs reqs))))
     (if (and version (version-list-< package--emacs-version-list version))
-        (package-version-join version)
+        (version-join version)
       (unless shallow
         (let (out)
           (dolist (dep (package-desc-reqs pkg) out)
@@ -2372,7 +2372,7 @@ Return (PKG-DESC [NAME VERSION STATUS DOC])."
                    'follow-link t
                    'package-desc pkg-desc
                    'action 'package-menu-describe-package)
-            ,(propertize (package-version-join
+            ,(propertize (version-join
                           (package-desc-version pkg-desc))
                          'font-lock-face face)
             ,(propertize status 'font-lock-face face)
